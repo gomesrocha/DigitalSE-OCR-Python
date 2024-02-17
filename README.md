@@ -1,2 +1,2 @@
 # DigitalSE-OCR-Python
-Estudo sobre OCR em Python e API de OCR desenvolvida em Python com Flask
+Nova versão do DigitalSE usando Python, Tesseract OCR, FastAPI, MINIO, RabbitMQ e distribuido com microsserviços.
