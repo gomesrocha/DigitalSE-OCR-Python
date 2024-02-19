@@ -11,17 +11,6 @@ from app.domain.upload_file import _save_file_to_server, upload_to_minio
 from app.models.file_manager import GestaoArquivos
 from app.infra.db import get_session, init_db
 
-'''
-# Configurações do PostgreSQL
-DATABASE_URL = "postgresql://postgres:postgres@postgres/digitalsedb"
-
-engine = create_engine(DATABASE_URL)
-# SQLModel.metadata.create_all(engine)
-
-def init_db():
-    SQLModel.metadata.create_all(engine)
-'''
-
 app = FastAPI(
     title="DigitalSE",
     version="0.1.0",

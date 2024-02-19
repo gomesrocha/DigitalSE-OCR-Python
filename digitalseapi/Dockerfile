@@ -8,7 +8,7 @@ VOLUME /home/app/images
 
 # Create the home directory
 ENV APP_HOME=/home/app/api
-RUN mkdir -p $APP_HOME
+RUN mkdir -p "$APP_HOME"
 WORKDIR $APP_HOME
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
