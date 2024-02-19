@@ -1,0 +1,13 @@
+fastapi[all]==0.108.0
+fastapi-pagination==0.12.14
+pydantic==2.5.3
+pydantic_core==2.14.6
+pydantic-settings==2.1.0
+sqlmodel==0.0.16
+typer==0.7.0
+typing-extensions==4.8.0
+psycopg2-binary==2.9.5
+uvicorn
+asyncpg
+minio
+python-multipart

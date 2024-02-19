@@ -6,32 +6,16 @@ services:
     ports:
       - "9000:9000"
     volumes:
-      - minio_data:/data
+      - $HOME/data:/data
     environment:
       MINIO_ACCESS_KEY: digitalse
       MINIO_SECRET_KEY: digitalse
     command: server /data
     networks:
-      - digitalse
-  rabbitmq:
-    image: "rabbitmq:3.9.14-management"
-    ports:
-      - "5672:5672"  
-      - "15672:15672"  
-    environment:
-      RABBITMQ_DEFAULT_USER: guest
-      RABBITMQ_DEFAULT_PASS: guest
-      RABBITMQ_DEFAULT_VHOST: /
-      RABBITMQ_QUEUE_NAMES: "ocr,pipeline"
-      RABBITMQ_QUEUE_FILA1: '{"durable":false, "auto_delete":false}'
-      RABBITMQ_QUEUE_FILA2: '{"durable":false, "auto_delete":false}'
-    volumes:
-      - rabbitmq_data:/var/lib/rabbitmq
-    networks:
-      - digitalse
+      - digitalse-network
   postgres:
     image: postgres:15.5-alpine3.19
-    container_name: RaidStorm-postgres
+    container_name: digitalse-postgres
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
@@ -39,9 +23,9 @@ services:
     ports:
       - "5434:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/var/data
+      - $HOME/.postgres/digitalsedb/data/postgresql:/var/lib/postgresql/data
     networks:
-      - digitalse
+      - digitalse-network
   digitalseapi:
     build:
       context: ./digitalseapi
@@ -49,14 +33,16 @@ services:
     image: digitalseapi
     ports:
       - "8000:8000"
+    volumes:
+      - $HOME/data:/home/app/images
     depends_on:
       - minio
       - postgres
     networks:
-      - digitalse
+      - digitalse-network
 networks:
-  zap-network:
+  digitalse-network:
 volumes:
   postgres_data:
   minio_data:
-  rabbitmq_data:
+  local-images:
