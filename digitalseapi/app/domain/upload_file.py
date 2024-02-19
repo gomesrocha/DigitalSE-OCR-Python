@@ -13,6 +13,7 @@ def _save_file_to_server(uploaded_file, path=".", save_as="default"):
     return temp_file
 
 
+
 def upload_to_minio(minio_client: Minio, file_path, bucket_name, object_name):
     # Upload file to MinIO
     with open(file_path, 'rb') as file_data:

@@ -1,24 +1,26 @@
-from fastapi import FastAPI, UploadFile, File, HTTPException, Form
+from unittest import result
+from fastapi import FastAPI, UploadFile, File, HTTPException, Form, Depends
 from minio import Minio
 import asyncpg
 from typing import List, Optional
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
-from sqlmodel import SQLModel, create_engine, Session
+from sqlmodel import SQLModel, create_engine, Session, select
 import os
 from app.domain.upload_file import _save_file_to_server, upload_to_minio
 from app.models.file_manager import GestaoArquivos
+from app.infra.db import get_session, init_db
 
+'''
 # Configurações do PostgreSQL
 DATABASE_URL = "postgresql://postgres:postgres@postgres/digitalsedb"
 
 engine = create_engine(DATABASE_URL)
 # SQLModel.metadata.create_all(engine)
 
-
 def init_db():
     SQLModel.metadata.create_all(engine)
-
+'''
 
 app = FastAPI(
     title="DigitalSE",
@@ -64,7 +66,8 @@ def on_startup():
 async def upload_image(*, input_images: List[UploadFile] = File(...),
                        title: Optional[str],
                        description: Optional[str],
-                       owner: Optional[str]):
+                       owner: Optional[str],
+                       session: Session = Depends(get_session)):
     try:
         # Salva a imagem no Minio
         bucket_name = "images"
@@ -87,46 +90,25 @@ async def upload_image(*, input_images: List[UploadFile] = File(...),
 
         arquivo_db = GestaoArquivos(titulo=title, descricao=description, 
                                     responsavel=owner, localizacao=image_name)
-        with Session(engine) as session:
-            session.add(arquivo_db)
-            session.commit()
-            session.refresh(arquivo_db)
-            print(arquivo_db)
+        session.add(arquivo_db)
+        session.commit()
+        session.refresh(arquivo_db)
+        print(arquivo_db)
         return {"message": "Upload successful"}
     except Exception as err:
         raise HTTPException(status_code=500, detail=f"Error: {err}")
 
 # Endpoint para listar as imagens
-@app.get("/images/", response_model=List[Image])
-async def list_images():
+@app.get("/images/", response_model=List[GestaoArquivos])
+async def list_images(session: Session = Depends(get_session)):
     try:
         # Consulta o PostgreSQL para obter os caminhos das imagens
-        conn = await connect_db()
-        rows = await conn.fetch("SELECT id, path FROM images")
-        await conn.close()
-
-        return [{"id": row['id'], "path": row['path']} for row in rows]
-    except asyncpg.exceptions.PostgresError as err:
-        raise HTTPException(status_code=500, detail=f"PostgreSQL error: {err}")
-
-# Endpoint para exibir uma imagem
-@app.get("/images/{image_id}/")
-async def get_image(image_id: int):
-    try:
-        # Consulta o PostgreSQL para obter o caminho da imagem
-        conn = await connect_db()
-        row = await conn.fetchrow("SELECT path FROM images WHERE id = $1", image_id)
-        await conn.close()
-
-        if not row:
-            raise HTTPException(status_code=404, detail="Image not found")
-
-        image_path = row['path']
-
-        # Obtém a imagem do Minio
-        image_stream = minio_client.get_object("images", image_path)
-        image_data = image_stream.read()
-
-        return {"image": image_data}
+        result = session.execute(select(GestaoArquivos))
+        arquivos = result.scalars().all()
+        return [GestaoArquivos(id=arquivo.id, 
+                               titulo=arquivo.titulo, 
+                               descricao=arquivo.descricao,
+                               responsavel=arquivo.responsavel,
+                               localizacao=arquivo.localizacao) for arquivo in arquivos]
     except Exception as err:
-        raise HTTPException(status_code=500, detail=f"Error: {err}")
+        raise HTTPException(status_code=500, detail=f"PostgreSQL error: {err}")
