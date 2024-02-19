@@ -4,10 +4,8 @@ import asyncpg
 from typing import List, Optional
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
-from sqlmodel import Field, SQLModel, create_engine, Session
+from sqlmodel import SQLModel, create_engine, Session
 import os
-import shutil
-from datetime import datetime
 from app.domain.upload_file import _save_file_to_server, upload_to_minio
 from app.models.file_manager import GestaoArquivos
 
@@ -15,13 +13,11 @@ from app.models.file_manager import GestaoArquivos
 DATABASE_URL = "postgresql://postgres:postgres@postgres/digitalsedb"
 
 engine = create_engine(DATABASE_URL)
-SQLModel.metadata.create_all(engine)
+# SQLModel.metadata.create_all(engine)
 
 
-class Arquivo(BaseModel):
-    titulo: str = Field(max_length=255)
-    descricao: str = Field(max_length=500)
-    responsavel: str = Field(max_length=255)
+def init_db():
+    SQLModel.metadata.create_all(engine)
 
 
 app = FastAPI(
@@ -52,15 +48,22 @@ class Image(BaseModel):
     id: int
     path: str
 
+
 # Conexão com o PostgreSQL
 async def connect_db():
     return await asyncpg.connect(DATABASE_URL)
 
+
+@app.on_event("startup")
+def on_startup():
+    init_db()
+
+
 # Endpoint para fazer upload de imagens
 @app.post("/upload/")
-async def upload_image(*, input_images: List[UploadFile] = File(...), 
-                       title: Optional[str], 
-                       description: Optional[str], 
+async def upload_image(*, input_images: List[UploadFile] = File(...),
+                       title: Optional[str],
+                       description: Optional[str],
                        owner: Optional[str]):
     try:
         # Salva a imagem no Minio
