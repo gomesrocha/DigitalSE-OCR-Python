@@ -57,6 +57,7 @@ async def connect_db():
     return await asyncpg.connect(DATABASE_URL)
 
 FastAPIInstrumentor.instrument_app(app)
+
 tracer = trace.get_tracer(__name__)
 
 

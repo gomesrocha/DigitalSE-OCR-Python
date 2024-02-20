@@ -39,10 +39,15 @@ services:
       - OTEL_EXPORTER_JAEGER_AGENT_HOST=jaeger
       - OTEL_EXPORTER_JAEGER_AGENT_PORT=6831
       - OTEL_SERVICE_NAME=digitalseapi
-      - OTEL_TRACES_EXPORTER=jaeger
-      - OTEL_TRACES_EXPORTER=console,otlp,logging,
+      - OTEL_TRACES_EXPORTER=console,otlp,logging,jaeger, jaegertracing
       - OTEL_AUTO_INSTRUMENT=True
+      - OTEL_PYTHON_LOG_CORRELATION=true
+      - OTEL_PYTHON_LOG_FORMAT="%(msg)s [span_id=%(span_id)s]"
+      - OTEL_PYTHON_LOG_LEVEL=debug
+      - OTEL_PYTHON_LOGGING_AUTO_INSTRUMENTATION_ENABLED=true
       - OTEL_EXPORTER_OTLP_TRACES_ENDPOINT=0.0.0.0:8000
+      - OTEL_PYTHON_FASTAPI_INSTRUMENT=True
+
     depends_on:
       - minio
       - postgres
