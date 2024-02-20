@@ -13,9 +13,10 @@ import logging
 
 
 from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
+from opentelemetry import trace
 
 
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
@@ -38,9 +39,6 @@ app.add_middleware(
 )
 
 
-
-
-
 # Configurações do Minio
 minio_client = Minio("minio:9000",
                       access_key="digitalse",
@@ -58,12 +56,14 @@ class Image(BaseModel):
 async def connect_db():
     return await asyncpg.connect(DATABASE_URL)
 
+FastAPIInstrumentor.instrument_app(app)
+tracer = trace.get_tracer(__name__)
+
 
 @app.on_event("startup")
 def on_startup():
     init_db()
-
-
+    
 
 # Endpoint para fazer upload de imagens
 @app.post("/upload/")
@@ -121,8 +121,4 @@ async def list_images(session: Session = Depends(get_session)):
                             responsavel=arquivo.responsavel,
                             localizacao=arquivo.localizacao) for arquivo in arquivos]
     except Exception as err:
-        span.log_kv({"error": str(err)})
         raise HTTPException(status_code=500, detail=f"PostgreSQL error: {err}")
-
-
-FastAPIInstrumentor.instrument_app(app)

@@ -36,10 +36,13 @@ services:
     volumes:
       - $HOME/data:/home/app/images
     environment:
-      - OTEL_EXPORTER_JAEGER_AGENT_HOST="jaeger"
-      - OTEL_EXPORTER_JAEGER_AGENT_PORT="6831"
-      - OTEL_SERVICE_NAME="digitalseapi"
+      - OTEL_EXPORTER_JAEGER_AGENT_HOST=jaeger
+      - OTEL_EXPORTER_JAEGER_AGENT_PORT=6831
+      - OTEL_SERVICE_NAME=digitalseapi
+      - OTEL_TRACES_EXPORTER=jaeger
+      - OTEL_TRACES_EXPORTER=console,otlp,logging,
       - OTEL_AUTO_INSTRUMENT=True
+      - OTEL_EXPORTER_OTLP_TRACES_ENDPOINT=0.0.0.0:8000
     depends_on:
       - minio
       - postgres
