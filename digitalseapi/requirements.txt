@@ -19,3 +19,4 @@ opentelemetry-instrumentation-fastapi
 opentelemetry-propagator-b3
 opentelemetry-distro
 opentelemetry-instrumentation-requests
+aio-pika==9.3.1

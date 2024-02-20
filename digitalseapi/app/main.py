@@ -10,7 +10,7 @@ from app.domain.upload_file import _save_file_to_server, upload_to_minio
 from app.models.file_manager import GestaoArquivos
 from app.infra.db import get_session, init_db
 import logging
-
+import aio_pika
 
 from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
 from opentelemetry import trace
@@ -66,6 +66,9 @@ def on_startup():
     init_db()
     
 
+
+
+
 # Endpoint para fazer upload de imagens
 @app.post("/upload/")
 async def upload_image(*, input_images: List[UploadFile] = File(...),
@@ -102,6 +105,16 @@ async def upload_image(*, input_images: List[UploadFile] = File(...),
         session.commit()
         session.refresh(arquivo_db)
         print(arquivo_db)
+        connection = await aio_pika.connect_robust("amqp://guest:guest@rabbitmq:5672/")
+        async with connection:
+            channel = await connection.channel()
+
+            await channel.default_exchange.publish(
+                aio_pika.Message(body=image_name.encode()),
+                routing_key="ocr",
+            )
+        # Fechar a conexão
+        await connection.close()
         return {"message": "Upload successful"}
     except Exception as err:
         raise HTTPException(status_code=500, detail=f"Error: {err}")

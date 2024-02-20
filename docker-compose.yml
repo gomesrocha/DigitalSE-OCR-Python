@@ -39,19 +39,22 @@ services:
       - OTEL_EXPORTER_JAEGER_AGENT_HOST=jaeger
       - OTEL_EXPORTER_JAEGER_AGENT_PORT=6831
       - OTEL_SERVICE_NAME=digitalseapi
-      - OTEL_TRACES_EXPORTER=console,otlp,logging,jaeger, jaegertracing
+      - OTEL_TRACES_EXPORTER=console, logging
+      - OTEL_METRICS_EXPORTER=console, logging
       - OTEL_AUTO_INSTRUMENT=True
-      - OTEL_PYTHON_LOG_CORRELATION=true
+      - OTEL_PYTHON_LOG_CORRELATION=True
       - OTEL_PYTHON_LOG_FORMAT="%(msg)s [span_id=%(span_id)s]"
-      - OTEL_PYTHON_LOG_LEVEL=debug
-      - OTEL_PYTHON_LOGGING_AUTO_INSTRUMENTATION_ENABLED=true
+      - OTEL_PYTHON_LOG_LEVEL=INFO
+      - OTEL_PYTHON_LOGGING_AUTO_INSTRUMENTATION_ENABLED=True
       - OTEL_EXPORTER_OTLP_TRACES_ENDPOINT=0.0.0.0:8000
       - OTEL_PYTHON_FASTAPI_INSTRUMENT=True
+      - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672/
 
     depends_on:
       - minio
       - postgres
       - jaeger
+      - rabbitmq
     networks:
       - digitalse-network
   jaeger:
@@ -64,9 +67,35 @@ services:
       - "16686:16686"
       - "14268:14268"
       - "9411:9411"
+  rabbitmq:
+    image: "rabbitmq:3.9.14-management"
+    ports:
+      - "5672:5672"  
+      - "15672:15672"  
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+      RABBITMQ_DEFAULT_VHOST: /
+      RABBITMQ_QUEUE_NAMES: "ocr"
+      RABBITMQ_QUEUE_FILA1: '{"durable":false, "auto_delete":false}'
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - digitalse-network
+  ocrservice:
+    build: 
+      context: ./ocrservice
+      dockerfile: Dockerfile
+    environment:
+      - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672/
+    depends_on:
+      - rabbitmq
+    networks:
+      - digitalse-network
 networks:
   digitalse-network:
 volumes:
   postgres_data:
   minio_data:
   local-images:
+  rabbitmq_data:

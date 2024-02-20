@@ -1,0 +1,2 @@
+faststream[rabbit]
+fast_depends
