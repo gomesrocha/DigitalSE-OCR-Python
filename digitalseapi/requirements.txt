@@ -19,3 +19,4 @@ opentelemetry-instrumentation-fastapi
 opentelemetry-propagator-b3
 opentelemetry-distro
 opentelemetry-instrumentation-requests
+setuptools>=65.5.1 # not directly required, pinned by Snyk to avoid a vulnerability
