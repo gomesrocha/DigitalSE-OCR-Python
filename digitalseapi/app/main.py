@@ -1,5 +1,4 @@
-from unittest import result
-from fastapi import FastAPI, UploadFile, File, HTTPException, Form, Depends
+from fastapi import FastAPI, UploadFile, File, HTTPException, Form, Depends, Request
 from minio import Minio
 import asyncpg
 from typing import List, Optional
@@ -10,6 +9,15 @@ import os
 from app.domain.upload_file import _save_file_to_server, upload_to_minio
 from app.models.file_manager import GestaoArquivos
 from app.infra.db import get_session, init_db
+import logging
+
+
+from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
+
+
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
+
 
 app = FastAPI(
     title="DigitalSE",
@@ -19,6 +27,8 @@ app = FastAPI(
 allow_origin = ["*"]
 
 
+
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=allow_origin,
@@ -26,6 +36,10 @@ app.add_middleware(
     allow_headers=["*"],
     allow_credentials=True,
 )
+
+
+
+
 
 # Configurações do Minio
 minio_client = Minio("minio:9000",
@@ -50,6 +64,7 @@ def on_startup():
     init_db()
 
 
+
 # Endpoint para fazer upload de imagens
 @app.post("/upload/")
 async def upload_image(*, input_images: List[UploadFile] = File(...),
@@ -57,8 +72,11 @@ async def upload_image(*, input_images: List[UploadFile] = File(...),
                        description: Optional[str],
                        owner: Optional[str],
                        session: Session = Depends(get_session)):
+    logger.debug("upload images endpoint accessed")
     try:
         # Salva a imagem no Minio
+    
+
         bucket_name = "images"
         found = minio_client.bucket_exists(bucket_name)
         if not found:
@@ -90,14 +108,21 @@ async def upload_image(*, input_images: List[UploadFile] = File(...),
 # Endpoint para listar as imagens
 @app.get("/images/", response_model=List[GestaoArquivos])
 async def list_images(session: Session = Depends(get_session)):
+    logger.debug("images endpoint accessed")
     try:
         # Consulta o PostgreSQL para obter os caminhos das imagens
         result = session.execute(select(GestaoArquivos))
         arquivos = result.scalars().all()
+        
+
         return [GestaoArquivos(id=arquivo.id, 
-                               titulo=arquivo.titulo, 
-                               descricao=arquivo.descricao,
-                               responsavel=arquivo.responsavel,
-                               localizacao=arquivo.localizacao) for arquivo in arquivos]
+                            titulo=arquivo.titulo, 
+                            descricao=arquivo.descricao,
+                            responsavel=arquivo.responsavel,
+                            localizacao=arquivo.localizacao) for arquivo in arquivos]
     except Exception as err:
+        span.log_kv({"error": str(err)})
         raise HTTPException(status_code=500, detail=f"PostgreSQL error: {err}")
+
+
+FastAPIInstrumentor.instrument_app(app)
