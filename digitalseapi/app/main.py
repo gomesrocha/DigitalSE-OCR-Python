@@ -15,7 +15,10 @@ import aio_pika
 from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
 from opentelemetry import trace
 
-
+'''
+TODO
+Separar as rotas user, document, auth
+'''
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -79,7 +82,7 @@ async def upload_image(*, input_images: List[UploadFile] = File(...),
     logger.debug("upload images endpoint accessed")
     try:
         # Salva a imagem no Minio
-    
+
 
         bucket_name = "images"
         found = minio_client.bucket_exists(bucket_name)
@@ -91,11 +94,11 @@ async def upload_image(*, input_images: List[UploadFile] = File(...),
         image_name = ""
         for img in input_images:
             print("Images Uploaded: ", img.filename)
-            temp_file = _save_file_to_server(img, path="./images/", 
+            temp_file = _save_file_to_server(img, path="./images/",
                                              save_as=img.filename)
             image_name = img.filename
             # Upload file to MinIO
-            upload_to_minio(minio_client, temp_file, 
+            upload_to_minio(minio_client, temp_file,
                             bucket_name, img.filename)
             os.remove(temp_file)
 

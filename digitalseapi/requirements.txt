@@ -20,3 +20,4 @@ opentelemetry-propagator-b3
 opentelemetry-distro
 opentelemetry-instrumentation-requests
 aio-pika==9.3.1
+setuptools==69.1.1

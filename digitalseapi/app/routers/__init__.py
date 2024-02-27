@@ -4,5 +4,5 @@ from .documents import router as documents_router
 
 main_router = APIRouter()
 
-main_router.include_router(documents_router, tags=["Documents"])
+main_router.include_router(documents_router, prefix="/documents", tags=["Documents"])
 
