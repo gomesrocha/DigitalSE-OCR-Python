@@ -8,7 +8,7 @@ typer==0.7.0
 typing-extensions==4.8.0
 psycopg2-binary==2.9.5
 uvicorn
-asyncpg
+asyncpgCurrently the OCR extracts the words, but they are not being saved, so word searches are not possible. The system needs to be refactored to allow the tokens to be extracted and saved in the database, and a new word search endpoint needs to be created.
 minio
 python-multipart
 opentelemetry-sdk==1.22.0
