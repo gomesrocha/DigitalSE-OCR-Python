@@ -11,6 +11,7 @@ from app.models.file_manager import GestaoArquivos
 from app.infra.db import get_session, init_db
 import logging
 import aio_pika
+from app.infra.config import get_settings
 
 from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
 from opentelemetry import trace
@@ -30,7 +31,7 @@ app = FastAPI(
 )
 allow_origin = ["*"]
 
-
+settings = get_settings()
 
 
 app.add_middleware(
@@ -43,10 +44,10 @@ app.add_middleware(
 
 
 # Configurações do Minio
-minio_client = Minio("minio:9000",
-                      access_key="digitalse",
-                      secret_key="digitalse",
-                      secure=False)
+minio_client = Minio(settings.MINIO_URL,
+                      access_key=settings.MINIO_ACCESS_KEY,
+                      secret_key=settings.MINIO_SECRET_KEY,
+                      secure=settings.MINIO_SECURE)
 
 
 # Modelo de dados
