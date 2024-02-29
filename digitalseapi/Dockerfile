@@ -15,8 +15,9 @@ ENV PYTHONUNBUFFERED 1
 
 
 # install
+RUN pip 
 COPY . $APP_HOME
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --upgrade pip && pip install --no-cache-dir -r requirements.txt
 RUN opentelemetry-bootstrap -a install
 
 
