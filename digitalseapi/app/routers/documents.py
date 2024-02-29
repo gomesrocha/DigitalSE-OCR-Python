@@ -7,7 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlmodel import SQLModel, create_engine, Session, select
 import os
 from app.domain.upload_file import _save_file_to_server, upload_to_minio
-from app.models.file_manager import GestaoArquivos
+from app.models.file_manager import GestaoArquivos, DocumentToken, Token
 from app.infra.db import get_session, init_db
 import logging
 import aio_pika
@@ -17,6 +17,32 @@ minio_client = Minio("minio:9000",
                       access_key="digitalse",
                       secret_key="digitalse",
                       secure=False)
+
+def search_documents_by_tokens(session: Session, tokens: List[str]) -> List[GestaoArquivos]:
+    documents = []
+
+    # Buscar os tokens correspondentes às palavras-chave
+    found_tokens = session.exec(select(Token).where(
+        Token.word.in_(tokens))).all()
+
+    # Buscar documentos que têm pelo menos um dos tokens encontrados
+    for token in found_tokens:
+        document_tokens = session.exec(select(DocumentToken).where(
+            DocumentToken.token_id == token.id)).all()
+        for document_token in document_tokens:
+            document = session.get(GestaoArquivos, document_token.document_id)
+            if document and document not in documents:
+                documents.append(document)
+
+    return documents
+
+@app.get("/search_by_tokens/")
+async def search_documents_by_tokens_endpoint(tokens: List[str], session: Session = Depends(get_session)):
+    documents = search_documents_by_tokens(session, tokens)
+    if not documents:
+        raise HTTPException(status_code=404, detail="Nenhum documento encontrado com os tokens fornecidos.")
+    return documents
+
 
 @router.post("/upload/")
 async def upload_image(*, input_images: List[UploadFile] = File(...),
