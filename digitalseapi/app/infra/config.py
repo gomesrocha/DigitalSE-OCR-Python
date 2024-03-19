@@ -12,9 +12,10 @@ class Settings(BaseSettings):
     RABBITMQ_URL: str = ""
     DB_URL: str = ""
     MINIO_URL: str = "minio:9000"
-    MINIO_ACCESS_KEY: str = "digitalse
-    MINIO_SECRET_KEY: str = "digitalse
+    MINIO_ACCESS_KEY: str = "digitalse"
+    MINIO_SECRET_KEY: str = "digitalse"
     MINIO_SECURE: bool = False
+    SECRET_KEY: str = "digitalse"
     class Config:
         env_file = ".env"
 

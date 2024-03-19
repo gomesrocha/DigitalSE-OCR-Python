@@ -9,19 +9,21 @@ import os
 from app.domain.upload_file import _save_file_to_server, upload_to_minio
 from app.models.file_manager import GestaoArquivos
 from app.infra.db import get_session, init_db
-import logging
+#import logging
 import aio_pika
 from app.infra.config import get_settings
+#from elasticapm.contrib.starlette import ElasticAPM, make_apm_client
 
-from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
-from opentelemetry import trace
+
+#from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
+#from opentelemetry import trace
 
 '''
 TODO
 Separar as rotas user, document, auth
 '''
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+#logging.basicConfig(level=logging.INFO)
+#logger = logging.getLogger(__name__)
 
 
 app = FastAPI(
@@ -60,9 +62,9 @@ class Image(BaseModel):
 async def connect_db():
     return await asyncpg.connect(DATABASE_URL)
 
-FastAPIInstrumentor.instrument_app(app)
+#FastAPIInstrumentor.instrument_app(app)
 
-tracer = trace.get_tracer(__name__)
+#tracer = trace.get_tracer(__name__)
 
 
 @app.on_event("startup")
