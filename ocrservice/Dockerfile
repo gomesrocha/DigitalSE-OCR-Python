@@ -17,7 +17,7 @@ COPY . $APP_HOME
 RUN apt-get update \
   && apt-get -y install --no-install-recommends gcc tesseract-ocr \
   && apt-get clean
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --upgrade pip && pip install --no-cache-dir -r requirements.txt
 
 RUN chown -R app:app $APP_HOME
 USER app

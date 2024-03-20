@@ -2,5 +2,4 @@ faststream[rabbit]
 fast_depends
 minio 
 pytesseract
-pillow
 pydantic

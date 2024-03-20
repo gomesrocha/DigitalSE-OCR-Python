@@ -10,7 +10,7 @@ from app.domain.upload_file import _save_file_to_server, upload_to_minio
 from app.models.file_manager import GestaoArquivos, UploadedFile
 from app.infra.db import get_session, init_db
 import aio_pika
-from app.infra.config import get_settings
+from app.infra.config import get_settings, get_minio_client
 import json
 
 
@@ -83,6 +83,8 @@ async def upload_image(*, input_images: List[UploadFile] = File(...),
                        owner: Optional[str],
                        session: Session = Depends(get_session)):
     #logger.debug("upload images endpoint accessed")
+    minio_client = get_minio_client()
+    
     try:
         # Salva a imagem no Minio
 
