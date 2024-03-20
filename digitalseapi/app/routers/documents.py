@@ -7,40 +7,13 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlmodel import SQLModel, create_engine, Session, select
 import os
 from app.domain.upload_file import _save_file_to_server, upload_to_minio
-from app.models.file_manager import GestaoArquivos, DocumentToken, Token
+from app.models.file_manager import GestaoArquivos, UploadedFile
 from app.infra.db import get_session, init_db
+from app.infra.config import get_settings, get_minio_client
+import json
 import aio_pika
+
 router = APIRouter()
-
-minio_client = Minio("minio:9000",
-                      access_key="digitalse",
-                      secret_key="digitalse",
-                      secure=False)
-
-def search_documents_by_tokens(session: Session, tokens: List[str]) -> List[GestaoArquivos]:
-    documents = []
-
-    # Buscar os tokens correspondentes às palavras-chave
-    found_tokens = session.exec(select(Token).where(
-        Token.word.in_(tokens))).all()
-
-    # Buscar documentos que têm pelo menos um dos tokens encontrados
-    for token in found_tokens:
-        document_tokens = session.exec(select(DocumentToken).where(
-            DocumentToken.token_id == token.id)).all()
-        for document_token in document_tokens:
-            document = session.get(GestaoArquivos, document_token.document_id)
-            if document and document not in documents:
-                documents.append(document)
-
-    return documents
-
-@app.get("/search_by_tokens/")
-async def search_documents_by_tokens_endpoint(tokens: List[str], session: Session = Depends(get_session)):
-    documents = search_documents_by_tokens(session, tokens)
-    if not documents:
-        raise HTTPException(status_code=404, detail="Nenhum documento encontrado com os tokens fornecidos.")
-    return documents
 
 
 @router.post("/upload/")
@@ -49,6 +22,9 @@ async def upload_image(*, input_images: List[UploadFile] = File(...),
                        description: Optional[str],
                        owner: Optional[str],
                        session: Session = Depends(get_session)):
+    #logger.debug("upload images endpoint accessed")
+    minio_client = get_minio_client()
+
     try:
         # Salva a imagem no Minio
 
@@ -61,6 +37,7 @@ async def upload_image(*, input_images: List[UploadFile] = File(...),
         else:
             print("Bucket", bucket_name, "already exists")
         image_name = ""
+        
         for img in input_images:
             print("Images Uploaded: ", img.filename)
             temp_file = _save_file_to_server(img, path="./images/",
@@ -71,18 +48,21 @@ async def upload_image(*, input_images: List[UploadFile] = File(...),
                             bucket_name, img.filename)
             os.remove(temp_file)
 
-        arquivo_db = GestaoArquivos(titulo=title, descricao=description,
+        arquivo_db = GestaoArquivos(titulo=title, descricao=description, 
                                     responsavel=owner, localizacao=image_name)
         session.add(arquivo_db)
         session.commit()
         session.refresh(arquivo_db)
         print(arquivo_db)
+        uploaded_files = UploadedFile(user_id=owner, document_id=arquivo_db.id, file_name=image_name)
+        message_body = json.dumps(uploaded_files.dict())
+
         connection = await aio_pika.connect_robust("amqp://guest:guest@rabbitmq:5672/")
         async with connection:
             channel = await connection.channel()
 
             await channel.default_exchange.publish(
-                aio_pika.Message(body=image_name.encode()),
+                aio_pika.Message(body=message_body.encode()),
                 routing_key="ocr",
             )
         # Fechar a conexão
@@ -90,3 +70,20 @@ async def upload_image(*, input_images: List[UploadFile] = File(...),
         return {"message": "Upload successful"}
     except Exception as err:
         raise HTTPException(status_code=500, detail=f"Error: {err}")
+
+# Endpoint para listar as imagens
+@router.get("/images/", response_model=List[GestaoArquivos])
+async def list_images(session: Session = Depends(get_session)):
+    try:
+        # Consulta o PostgreSQL para obter os caminhos das imagens
+        result = session.execute(select(GestaoArquivos))
+        arquivos = result.scalars().all()
+        
+
+        return [GestaoArquivos(id=arquivo.id, 
+                            titulo=arquivo.titulo, 
+                            descricao=arquivo.descricao,
+                            responsavel=arquivo.responsavel,
+                            localizacao=arquivo.localizacao) for arquivo in arquivos]
+    except Exception as err:
+        raise HTTPException(status_code=500, detail=f"PostgreSQL error: {err}")

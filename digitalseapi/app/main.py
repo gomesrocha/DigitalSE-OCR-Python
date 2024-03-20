@@ -12,7 +12,7 @@ from app.infra.db import get_session, init_db
 import aio_pika
 from app.infra.config import get_settings, get_minio_client
 import json
-
+from app.routers import main_router
 
 '''
 TODO
@@ -29,12 +29,6 @@ allow_origin = ["*"]
 
 settings = get_settings()
 
-'''
-class UploadedFile(BaseModel):
-    user_id: int
-    document_id: int
-    file_name: str
-'''
 
 app.add_middleware(
     CORSMiddleware,
@@ -45,13 +39,9 @@ app.add_middleware(
 )
 
 
-# Configurações do Minio
-minio_client = Minio(settings.MINIO_URL,
-                      access_key=settings.MINIO_ACCESS_KEY,
-                      secret_key=settings.MINIO_SECRET_KEY,
-                      secure=settings.MINIO_SECURE)
+app.include_router(main_router)
 
-
+''''''
 # Modelo de dados
 class Image(BaseModel):
     id: int
@@ -73,7 +63,7 @@ def on_startup():
     
 
 
-
+'''
 
 # Endpoint para fazer upload de imagens
 @app.post("/upload/")
@@ -84,7 +74,7 @@ async def upload_image(*, input_images: List[UploadFile] = File(...),
                        session: Session = Depends(get_session)):
     #logger.debug("upload images endpoint accessed")
     minio_client = get_minio_client()
-    
+
     try:
         # Salva a imagem no Minio
 
@@ -147,3 +137,4 @@ async def list_images(session: Session = Depends(get_session)):
                             localizacao=arquivo.localizacao) for arquivo in arquivos]
     except Exception as err:
         raise HTTPException(status_code=500, detail=f"PostgreSQL error: {err}")
+'''
