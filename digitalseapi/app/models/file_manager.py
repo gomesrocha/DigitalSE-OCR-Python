@@ -4,14 +4,20 @@ from datetime import datetime
 from pydantic import BaseModel
 
 
+#class Token(SQLModel, table=True):
+#    id: Optional[int] = Field(default=None, primary_key=True)
+#    word: str
 
-class Token(SQLModel, table=True):
-    id: Optional[int] = Field(default=None, primary_key=True)
-    word: str
+#Data model for transfer
+class UploadedFile(BaseModel):
+    user_id: int
+    document_id: int
+    file_name: str
 
 
+
+#Model database
 class GestaoArquivos(SQLModel, table=True):
-
     __tablename__ = "gestaoarquivos"
     
     id: Optional[int] = Field(primary_key=True)
@@ -20,26 +26,24 @@ class GestaoArquivos(SQLModel, table=True):
     responsavel: Optional[str] = Field(max_length=255)
     data: Optional[datetime] = Field(default=datetime.now())
     localizacao: Optional[str] = Field(max_length=255)
-    tokens: List["Token"] = Relationship(back_populates="gestaoarquivos")
 
 
-# Definir modelo para a tabela de associação entre documentos e tokens
-class DocumentToken(SQLModel, table=True):
-    id: Optional[int] = Field(default=None, primary_key=True)
-    document_id: int = Field(foreign_key="gestaoarquivos.id")
-    token_id: int = Field(foreign_key="token.id")
+#class DocumentToken(SQLModel, table=True):
+#    id: Optional[int] = Field(default=None, primary_key=True)
+#    document_id: int = Field(foreign_key="gestaoarquivos.id")
+#    token_id: int = Field(foreign_key="token.id")
 
     # Relacionamentos
-    gestaoarquivos: Optional["GestaoArquivos"] = Relationship(back_populates="tokens_association")
-    token: Optional["Token"] = Relationship(back_populates="documents_association")
+#    gestaoarquivos: GestaoArquivos = Relationship(back_populates="document_tokens")
+#    token: Token = Relationship()
 
 
 # Adicionar relação muitos para muitos entre Document e Token
-GestaoArquivos.tokens_association = Relationship(
-    back_populates="gestaoarquivos"
-)
+#GestaoArquivos.document_tokens = Relationship(
+#    DocumentToken, back_populates="gestaoarquivos"
+#)
 
 # Adicionar relação muitos para muitos entre Token e Document
-Token.documents_association = Relationship(
-    back_populates="tokens"
-)
+#Token.documents_association = Relationship(
+#    DocumentToken, back_populates="token"
+#)

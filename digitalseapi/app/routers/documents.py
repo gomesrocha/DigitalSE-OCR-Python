@@ -9,7 +9,6 @@ import os
 from app.domain.upload_file import _save_file_to_server, upload_to_minio
 from app.models.file_manager import GestaoArquivos, DocumentToken, Token
 from app.infra.db import get_session, init_db
-import logging
 import aio_pika
 router = APIRouter()
 
@@ -50,7 +49,6 @@ async def upload_image(*, input_images: List[UploadFile] = File(...),
                        description: Optional[str],
                        owner: Optional[str],
                        session: Session = Depends(get_session)):
-    logger.debug("upload images endpoint accessed")
     try:
         # Salva a imagem no Minio
 

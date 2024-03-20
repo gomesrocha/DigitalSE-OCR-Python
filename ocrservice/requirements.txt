@@ -3,3 +3,4 @@ fast_depends
 minio 
 pytesseract
 pillow
+pydantic

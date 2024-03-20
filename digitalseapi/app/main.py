@@ -7,23 +7,17 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlmodel import SQLModel, create_engine, Session, select
 import os
 from app.domain.upload_file import _save_file_to_server, upload_to_minio
-from app.models.file_manager import GestaoArquivos
+from app.models.file_manager import GestaoArquivos, UploadedFile
 from app.infra.db import get_session, init_db
-#import logging
 import aio_pika
 from app.infra.config import get_settings
-#from elasticapm.contrib.starlette import ElasticAPM, make_apm_client
+import json
 
-
-#from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
-#from opentelemetry import trace
 
 '''
 TODO
 Separar as rotas user, document, auth
 '''
-#logging.basicConfig(level=logging.INFO)
-#logger = logging.getLogger(__name__)
 
 
 app = FastAPI(
@@ -35,6 +29,12 @@ allow_origin = ["*"]
 
 settings = get_settings()
 
+'''
+class UploadedFile(BaseModel):
+    user_id: int
+    document_id: int
+    file_name: str
+'''
 
 app.add_middleware(
     CORSMiddleware,
@@ -82,7 +82,7 @@ async def upload_image(*, input_images: List[UploadFile] = File(...),
                        description: Optional[str],
                        owner: Optional[str],
                        session: Session = Depends(get_session)):
-    logger.debug("upload images endpoint accessed")
+    #logger.debug("upload images endpoint accessed")
     try:
         # Salva a imagem no Minio
 
@@ -95,6 +95,7 @@ async def upload_image(*, input_images: List[UploadFile] = File(...),
         else:
             print("Bucket", bucket_name, "already exists")
         image_name = ""
+        
         for img in input_images:
             print("Images Uploaded: ", img.filename)
             temp_file = _save_file_to_server(img, path="./images/",
@@ -111,12 +112,15 @@ async def upload_image(*, input_images: List[UploadFile] = File(...),
         session.commit()
         session.refresh(arquivo_db)
         print(arquivo_db)
+        uploaded_files = UploadedFile(user_id=owner, document_id=arquivo_db.id, file_name=image_name)
+        message_body = json.dumps(uploaded_files.dict())
+
         connection = await aio_pika.connect_robust("amqp://guest:guest@rabbitmq:5672/")
         async with connection:
             channel = await connection.channel()
 
             await channel.default_exchange.publish(
-                aio_pika.Message(body=image_name.encode()),
+                aio_pika.Message(body=message_body.encode()),
                 routing_key="ocr",
             )
         # Fechar a conexão
@@ -128,7 +132,6 @@ async def upload_image(*, input_images: List[UploadFile] = File(...),
 # Endpoint para listar as imagens
 @app.get("/images/", response_model=List[GestaoArquivos])
 async def list_images(session: Session = Depends(get_session)):
-    logger.debug("images endpoint accessed")
     try:
         # Consulta o PostgreSQL para obter os caminhos das imagens
         result = session.execute(select(GestaoArquivos))
