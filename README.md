@@ -23,12 +23,33 @@ O **DigitalSE** é um sistema de gestão de documentos de código aberto (open-s
 Em resumo, o **DigitalSE** é uma solução abrangente e eficiente para a gestão de documentos, destacando-se por sua simplicidade, agilidade e capacidade de integração com outros serviços e sistemas.
 
 # Serviços
-## digitalseapi
-Principal ponto de entrada no sistema, com os endpoints que realizam a comunicação com os outros serviços.
 
-## Minio
-Serviço de armazenamento de arquivos, bucket compatível com modelos de cloud storage.
+**digitalseapi**:Principal ponto de entrada no sistema, com os endpoints que realizam a comunicação com os outros serviços.
 
-## Postgres
-Banco de dados relacional, utilizado para armazenar os dados do sistema.
+**Minio**: Serviço de armazenamento de arquivos, bucket compatível com modelos de cloud storage.
+
+**Postgres**: Banco de dados relacional, utilizado para armazenar os dados do sistema.
+
+# Install
+
+
+Você pode fazer um [fork](https://github.com/gomesrocha/DigitalSE-OCR-Python/fork) do projeto caso desejar 
+
+
+1. Clone o projeto
+
+
+ˋˋˋ
+git clone https://github.com/gomesrocha/DigitalSE-OCR-Python.git
+ ˋˋˋ
+
+2. Para rodar, entre no diretório do projeto DIgitalSE-OCR-Python e execute o docker-compose
+
+ˋˋˋ
+docker compose up -d --build
+ ˋˋˋ
+
+3. Verifique se todos os serviços subiram corretamente no docker
+
+4. Abra o projeto via localhost:8000
 
