@@ -1,7 +1,8 @@
-# DigitalSE-OCR-Python
+# DigitalSE 
+
 ![DigitalSE](./DigitalSE.jpg)
 
-O **DigitalSE** é um sistema de gestão de documentos de código aberto (open-source) projetado para lidar principalmente com documentos antigos digitalizados em formatos como JPG, PNG e PDF, com a flexibilidade para adaptar-se a outros tipos de documentos. Seu principal objetivo é garantir simplicidade e agilidade no processo de transcrição de documentos.
+O **DigitalSE** é um sistema de gestão de documentos de código aberto (open-source) projetado para lidar principalmente com documentos antigos digitalizados em formatos como JPG, PNG e PDF, com a flexibilidade para adaptar-se a outros tipos de documentos. Seu principal objetivo é garantir simplicidade e agilidade no processo de transcrição de documentos.  Esta é a versão implementada em Python.
 
 ## Características Principais:
 
