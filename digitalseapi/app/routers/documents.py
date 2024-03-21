@@ -1,17 +1,13 @@
-from fastapi import APIRouter, status, UploadFile, File, HTTPException, Form, Depends, Request
-from minio import Minio
-import asyncpg
+from fastapi import APIRouter, UploadFile, File, HTTPException, Depends
 from typing import List, Optional
-from pydantic import BaseModel
-from fastapi.middleware.cors import CORSMiddleware
-from sqlmodel import SQLModel, create_engine, Session, select
-import os
-from app.domain.upload_file import _save_file_to_server, upload_to_minio
+from sqlmodel import Session, select
+
+from app.domain.queue import send_data_queue
+from app.domain.upload_file import bucket_upload
 from app.models.file_manager import GestaoArquivos, UploadedFile
-from app.infra.db import get_session, init_db
-from app.infra.config import get_settings, get_minio_client
+from app.infra.db import get_session
+from app.infra.config import get_minio_client
 import json
-import aio_pika
 
 router = APIRouter()
 
@@ -26,27 +22,8 @@ async def upload_image(*, input_images: List[UploadFile] = File(...),
     minio_client = get_minio_client()
 
     try:
-        # Salva a imagem no Minio
 
-
-        bucket_name = "images"
-        found = minio_client.bucket_exists(bucket_name)
-        if not found:
-            minio_client.make_bucket(bucket_name)
-            print("Created bucket", bucket_name)
-        else:
-            print("Bucket", bucket_name, "already exists")
-        image_name = ""
-        
-        for img in input_images:
-            print("Images Uploaded: ", img.filename)
-            temp_file = _save_file_to_server(img, path="./images/",
-                                             save_as=img.filename)
-            image_name = img.filename
-            # Upload file to MinIO
-            upload_to_minio(minio_client, temp_file,
-                            bucket_name, img.filename)
-            os.remove(temp_file)
+        image_name = await bucket_upload(input_images, minio_client)
 
         arquivo_db = GestaoArquivos(titulo=title, descricao=description, 
                                     responsavel=owner, localizacao=image_name)
@@ -57,19 +34,11 @@ async def upload_image(*, input_images: List[UploadFile] = File(...),
         uploaded_files = UploadedFile(user_id=owner, document_id=arquivo_db.id, file_name=image_name)
         message_body = json.dumps(uploaded_files.dict())
 
-        connection = await aio_pika.connect_robust("amqp://guest:guest@rabbitmq:5672/")
-        async with connection:
-            channel = await connection.channel()
-
-            await channel.default_exchange.publish(
-                aio_pika.Message(body=message_body.encode()),
-                routing_key="ocr",
-            )
-        # Fechar a conexão
-        await connection.close()
+        await send_data_queue(message_body)
         return {"message": "Upload successful"}
     except Exception as err:
         raise HTTPException(status_code=500, detail=f"Error: {err}")
+
 
 # Endpoint para listar as imagens
 @router.get("/images/", response_model=List[GestaoArquivos])

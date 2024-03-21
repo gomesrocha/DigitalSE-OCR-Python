@@ -19,3 +19,23 @@ def upload_to_minio(minio_client: Minio, file_path, bucket_name, object_name):
     with open(file_path, 'rb') as file_data:
         minio_client.put_object(bucket_name, object_name, file_data, length=os.stat(file_path).st_size)
 
+
+async def bucket_upload(input_images, minio_client):
+    bucket_name = "images"
+    found = minio_client.bucket_exists(bucket_name)
+    if not found:
+        minio_client.make_bucket(bucket_name)
+        print("Created bucket", bucket_name)
+    else:
+        print("Bucket", bucket_name, "already exists")
+    image_name = ""
+    for img in input_images:
+        print("Images Uploaded: ", img.filename)
+        temp_file = _save_file_to_server(img, path="./images/",
+                                         save_as=img.filename)
+        image_name = img.filename
+        # Upload file to MinIO
+        upload_to_minio(minio_client, temp_file,
+                        bucket_name, img.filename)
+        os.remove(temp_file)
+    return image_name
