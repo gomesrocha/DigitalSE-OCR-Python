@@ -39,15 +39,19 @@ Você pode fazer um [fork](https://github.com/gomesrocha/DigitalSE-OCR-Python/fo
 1. Clone o projeto
 
 
-ˋˋˋ
+'''
+
 git clone https://github.com/gomesrocha/DigitalSE-OCR-Python.git
- ˋˋˋ
+
+'''
 
 2. Para rodar, entre no diretório do projeto DIgitalSE-OCR-Python e execute o docker-compose
 
-ˋˋˋ
+'''
+
 docker compose up -d --build
- ˋˋˋ
+
+'''
 
 3. Verifique se todos os serviços subiram corretamente no docker
 
