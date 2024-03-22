@@ -6,11 +6,11 @@ from functools import partial
 from fastapi import Depends, HTTPException, Request, status
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
-from pydantic import BaseModel
 from sqlmodel import Session, select
 
 from app.infra.config import settings
 from app.infra.db import engine
+from app.models.auth import TokenData
 from app.models.user import User
 from app.infra.security import verify_password
 
@@ -21,25 +21,7 @@ ALGORITHM = settings.ALGORITHM  # pyright: ignore
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 
-# Models
-
-
-class Token(BaseModel):
-    access_token: str
-    refresh_token: str
-    token_type: str
-
-
-class RefreshToken(BaseModel):
-    refresh_token: str
-
-
-class TokenData(BaseModel):
-    username: Optional[str] = None
-
-
 # Functions
-
 
 def create_access_token(
     data: dict,

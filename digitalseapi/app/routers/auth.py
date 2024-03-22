@@ -4,8 +4,6 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 
 from app.infra.auth import (
-    RefreshToken,
-    Token,
     User,
     authenticate_user,
     create_access_token,
@@ -13,10 +11,11 @@ from app.infra.auth import (
     get_user,
     validate_token,
 )
+from app.models.auth import Token, RefreshToken
 from app.infra.config import settings
 
-ACCESS_TOKEN_EXPIRE_MINUTES = settings.security.access_token_expire_minutes  # pyright: ignore
-REFRESH_TOKEN_EXPIRE_MINUTES = settings.security.refresh_token_expire_minutes  # pyright: ignore
+ACCESS_TOKEN_EXPIRE_MINUTES = settings.ACCESS_TOKEN_EXPIRE_MINUTES  # pyright: ignore
+REFRESH_TOKEN_EXPIRE_MINUTES = settings.REFRESH_TOKEN_EXPIRE_MINUTES # pyright: ignore
 
 router = APIRouter()
 

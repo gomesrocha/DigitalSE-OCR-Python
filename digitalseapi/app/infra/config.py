@@ -16,6 +16,10 @@ class Settings(BaseSettings):
     MINIO_SECRET_KEY: str = "digitalse"
     MINIO_SECURE: bool = False
     SECRET_KEY: str = "digitalse"
+    ALGORITHM = "HS256"
+    ACCESS_TOKEN_EXPIRE_MINUTES = 30
+    REFRESH_TOKEN_EXPIRE_MINUTES = 600
+
     class Config:
         env_file = ".env"
 

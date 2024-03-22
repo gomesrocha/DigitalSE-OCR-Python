@@ -22,3 +22,4 @@ python-multipart
 aio-pika==9.3.1
 setuptools==69.1.1
 #elastic-apm[fastapi]
+jose

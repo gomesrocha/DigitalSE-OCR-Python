@@ -6,6 +6,8 @@ from PIL import Image
 import pytesseract
 import json
 from pydantic import BaseModel
+import re
+
 
 broker = RabbitBroker("amqp://guest:guest@rabbitmq:5672")
 app = FastStream(broker)
@@ -17,11 +19,19 @@ minio_client = Minio("minio:9000",
                       secret_key="digitalse",
                       secure=False)
 
+
 class UploadedFile(BaseModel):
     user_id: int
     document_id: int
     file_name: str
 
+
+def clean_and_tokenize(text):
+    # Remover espaços e símbolos indesejados usando expressão regular
+    cleaned_text = re.sub(r'[^\w\s]', '', text)
+    # Dividir o texto em tokens usando espaços como delimitador
+    tokens = cleaned_text.split()
+    return tokens
 
 @broker.subscriber("ocr")
 async def handle(message):
@@ -38,8 +48,9 @@ async def handle(message):
 
             # Extrair texto usando Tesseract
         texto_extraido = pytesseract.image_to_string(imagem)
+        tokens = clean_and_tokenize(texto_extraido)
 
             # Imprimir o texto extraído
-        print(texto_extraido)
+        print(tokens)
     except Exception as e:
         print(f"Erro ao transformar a mensagem em uma instância Pydantic: {e}")
