@@ -8,11 +8,44 @@ from app.models.file_manager import GestaoArquivos, UploadedFile
 from app.infra.db import get_session
 from app.infra.config import get_minio_client
 import json
+from motor.motor_asyncio import AsyncIOMotorClient
+from pydantic import BaseModel
+from typing import List
+
+class KeywordList(BaseModel):
+    keywords: List[str]
+
 
 router = APIRouter()
 
+#Banco mongo, refatorar posteriormente, inserindo na infra de banco de dados
+#mongo_client = AsyncIOMotorClient("mongodb://mongo:27017/")
 
-@router.post("/upload/")
+async def get_mongodb_client() -> AsyncIOMotorClient:
+    return AsyncIOMotorClient("mongodb://mongo:27017/")
+#db = mongo_client["document_db"]
+#collection = db["documents"]
+
+
+@router.post("/search")
+async def search_documents(keywords: KeywordList,
+                           mongodb_client: AsyncIOMotorClient = Depends(get_mongodb_client)):
+    try:
+        # Conecte-se à coleção no MongoDB
+        collection = mongodb_client["document_db"]["documents"]
+
+        # Consulta os documentos que contenham todas as palavras-chave fornecidas
+        cursor = collection.find({"_id": {"$in": keywords.keywords}})
+
+        # Transforma o cursor em uma lista de documentos
+        documents = await cursor.to_list(length=None)
+
+        # Retorna os documentos encontrados
+        return {"documents": documents}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error searching documents: {e}")
+
+@router.post("/")
 async def upload_image(*, input_images: List[UploadFile] = File(...),
                        title: Optional[str],
                        description: Optional[str],
@@ -41,7 +74,7 @@ async def upload_image(*, input_images: List[UploadFile] = File(...),
 
 
 # Endpoint para listar as imagens
-@router.get("/images/", response_model=List[GestaoArquivos])
+@router.get("/", response_model=List[GestaoArquivos])
 async def list_images(session: Session = Depends(get_session)):
     try:
         # Consulta o PostgreSQL para obter os caminhos das imagens

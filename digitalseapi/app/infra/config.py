@@ -2,7 +2,7 @@ import logging
 from functools import lru_cache
 from pydantic_settings import BaseSettings  # Alteração aqui
 from minio import Minio
-
+from fastapi import Depends
 log = logging.getLogger("uvicorn")
 
 
@@ -16,9 +16,9 @@ class Settings(BaseSettings):
     MINIO_SECRET_KEY: str = "digitalse"
     MINIO_SECURE: bool = False
     SECRET_KEY: str = "digitalse"
-    ALGORITHM = "HS256"
-    ACCESS_TOKEN_EXPIRE_MINUTES = 30
-    REFRESH_TOKEN_EXPIRE_MINUTES = 600
+    #ALGORITHM: str = "HS256"
+    #ACCESS_TOKEN_EXPIRE_MINUTES: str = 30
+    #REFRESH_TOKEN_EXPIRE_MINUTES: str = 600
 
     class Config:
         env_file = ".env"

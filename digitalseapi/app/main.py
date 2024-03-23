@@ -3,18 +3,18 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.infra.db import init_db
 
-from app.infra.config import get_settings
+from app.infra.config import settings
 from app.routers import main_router
 
 
 app = FastAPI(
     title="DigitalSE",
-    version="0.1.0",
+    version="0.1.15-rc0.2",
     description="Sistema de gestão documental com extração de dados por OCR",
 )
 allow_origin = ["*"]
 
-settings = get_settings()
+#settings = get_settings()
 
 
 app.add_middleware(

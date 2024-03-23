@@ -65,10 +65,21 @@ services:
       - rabbitmq
     networks:
       - digitalse-network
+  mongo:
+    image: mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - digitalse-network  
+
 networks:
   digitalse-network:
+
 volumes:
   data_postgres:
   minio_data:
   local-images:
   rabbitmq_data:
+  mongo_data:

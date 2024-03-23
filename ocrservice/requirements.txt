@@ -3,3 +3,4 @@ fast_depends
 minio 
 pytesseract
 pydantic
+motor==3.3.2
