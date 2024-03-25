@@ -10,11 +10,9 @@ from app.routers import main_router
 app = FastAPI(
     title="DigitalSE",
     version="0.1.15-rc0.2",
-    description="Sistema de gestão documental com extração de dados por OCR",
+    description="Historical document management system with OCR data extraction",
 )
 allow_origin = ["*"]
-
-#settings = get_settings()
 
 
 app.add_middleware(

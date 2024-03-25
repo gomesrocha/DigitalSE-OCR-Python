@@ -2,6 +2,63 @@
 
 ![DigitalSE](./DigitalSE.jpg)
 
+Version: En
+
+DigitalSE is an open-source document management system designed to deal mainly with old documents digitised in formats such as JPG, PNG and PDF, with the flexibility to adapt to other documents. Its main objective is to ensure simplicity and agility in the document transcription process. This is the version implemented in Python.
+
+## Main features:
+
+1. **Management of Old Documents: The system is specially designed to handle old scanned documents, allowing them to be organised, stored and searched efficiently.
+
+2. **Simplicity and Agility: DigitalSE prioritises ease of use and speed in document transcription, making it accessible and efficient for users.
+
+3. **Microservices Architecture: The system adopts a distributed architecture based on microservices. The leading service receives the document and associated data and stores them in a PostgreSQL database. The image/document is sent to a bucket (e.g. MinIO). However, the system is easily adaptable to integrate with other cloud storage services such as OCI or AWS.
+
+4. **OCR transcription process: The **DigitalSE** uses an optical character recognition (OCR) system to transcribe scanned documents. The image data is sent to a message queue (using RabbitMQ) and processed by the microservice responsible for OCR. This service retrieves the image from the bucket, performs OCR using Tesseract and generates tokens associated with the transcribed content. Subsequently, the transcribed data and tokens are stored in the database for future reference.
+
+## Benefits:
+
+1. **Efficient document management: DigitalSE offers an effective solution for document management, making it easier to organise and quickly access the information contained in digitised documents.
+
+2. **Flexibility and Adaptability**: The system is highly flexible and adaptable to the user's specific needs, with support for a variety of document formats and the ability to integrate with different cloud storage services.
+
+3. **Automating the Transcription Process**: By automating the transcription process through OCR and generating associated tokens, **DigitalSE** reduces the manual workload and speeds up the availability of transcribed information for use.
+
+To summarise, DigitalSE is a comprehensive and efficient document management solution that stands out for its simplicity, agility and ability to integrate with other services and systems.
+
+# Services
+
+**digitalseapi**: This is the main entry point into the system, with the endpoints that communicate with the other services.
+
+**Minio**: File storage service and bucket compatible with cloud storage models.
+
+**Postgres**: A relational database is used to store system data.
+
+# Install
+
+
+You can [fork](https://github.com/gomesrocha/DigitalSE-OCR-Python/fork) the project if you wish 
+
+
+1. Clone the project
+
+
+
+git clone https://github.com/gomesrocha/DigitalSE-OCR-Python.git
+
+
+2. To run it, go into the DIgitalSE-OCR-Python project directory and run docker-compose
+
+
+docker compose up -d --build
+
+
+3. Check that all the services have been correctly uploaded to the docker
+
+4. Open the project via localhost:8000
+
+Versão: pt-BR
+
 O **DigitalSE** é um sistema de gestão de documentos de código aberto (open-source) projetado para lidar principalmente com documentos antigos digitalizados em formatos como JPG, PNG e PDF, com a flexibilidade para adaptar-se a outros tipos de documentos. Seu principal objetivo é garantir simplicidade e agilidade no processo de transcrição de documentos.  Esta é a versão implementada em Python.
 
 ## Características Principais:

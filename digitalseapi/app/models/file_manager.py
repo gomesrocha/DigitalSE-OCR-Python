@@ -27,23 +27,3 @@ class GestaoArquivos(SQLModel, table=True):
     data: Optional[datetime] = Field(default=datetime.now())
     localizacao: Optional[str] = Field(max_length=255)
 
-
-#class DocumentToken(SQLModel, table=True):
-#    id: Optional[int] = Field(default=None, primary_key=True)
-#    document_id: int = Field(foreign_key="gestaoarquivos.id")
-#    token_id: int = Field(foreign_key="token.id")
-
-    # Relacionamentos
-#    gestaoarquivos: GestaoArquivos = Relationship(back_populates="document_tokens")
-#    token: Token = Relationship()
-
-
-# Adicionar relação muitos para muitos entre Document e Token
-#GestaoArquivos.document_tokens = Relationship(
-#    DocumentToken, back_populates="gestaoarquivos"
-#)
-
-# Adicionar relação muitos para muitos entre Token e Document
-#Token.documents_association = Relationship(
-#    DocumentToken, back_populates="token"
-#)
