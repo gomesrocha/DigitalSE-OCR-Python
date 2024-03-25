@@ -1,18 +1,10 @@
-import re
-
 from motor.motor_asyncio import AsyncIOMotorClient
-
-mongo_client = AsyncIOMotorClient("mongodb://mongo:27017/")
-db = mongo_client["document_db"]
-collection = db["documents"]
+from infra.config import settings
 
 
-def clean_and_tokenize(text):
-    # Remover espaços e símbolos indesejados usando expressão regular
-    cleaned_text = re.sub(r'[^\w\s]', '', text)
-    # Dividir o texto em tokens usando espaços como delimitador
-    tokens = cleaned_text.split()
-    return tokens
+mongo_client = AsyncIOMotorClient(settings.MONGODB_URL)
+db = mongo_client[settings.MONGODB_DB]
+collection = db[settings.MONGODB_COLLECTION]
 
 
 async def index_document(document_id, tokens):

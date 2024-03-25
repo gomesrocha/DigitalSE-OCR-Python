@@ -1,6 +1,6 @@
 faststream[rabbit]
-fast_depends
 minio 
 pytesseract
 pydantic
 motor==3.3.2
+pydantic-settings==2.1.0
