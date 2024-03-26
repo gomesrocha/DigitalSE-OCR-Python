@@ -47,12 +47,19 @@ git clone https://github.com/gomesrocha/DigitalSE-OCR-Python.git
 2. Create an .env file with the data for the environment variables in digitalseapi and ocrservice
 
 environment=dev
+
 RABBITMQ_URL=amqp://login:password@server:port/
+
 MINIO_URL=server:port
+
 MINIO_ACCESS_KEY=Access key minio
+
 MINIO_SECRET_KEY=Secret key minio
+
 SECRET_KEY=secret key for auth
+
 DATABASE_URL=postgresql://user:password@server/digitalsedb
+
 MONGODB_URL=mongodb://server:port/
 
 
@@ -113,12 +120,19 @@ git clone https://github.com/gomesrocha/DigitalSE-OCR-Python.git
 2. Crie um arquivo .env com os dados das variáveis de ambiente, em digitalseapi e em ocrservice
 
 environment=dev
+
 RABBITMQ_URL=amqp://login:password@server:port/
+
 MINIO_URL=server:port
+
 MINIO_ACCESS_KEY=Access key minio
+
 MINIO_SECRET_KEY=Secret key minio
-SECRET_KEY=secret key para auth
+
+SECRET_KEY=secret key for auth
+
 DATABASE_URL=postgresql://user:password@server/digitalsedb
+
 MONGODB_URL=mongodb://server:port/
 
 3. Para rodar, entre no diretório do projeto DIgitalSE-OCR-Python e execute o docker-compose
