@@ -28,6 +28,8 @@ To summarise, DigitalSE is a comprehensive and efficient document management sol
 
 # Services
 
+![DigitalSE components and communication](./digitalsebase.jpg)
+
 **digitalseapi**: This is the main entry point into the system, with the endpoints that communicate with the other services.
 
 **Minio**: File storage service and bucket compatible with cloud storage models.
@@ -98,6 +100,7 @@ O **DigitalSE** é um sistema de gestão de documentos de código aberto (open-s
 Em resumo, o **DigitalSE** é uma solução abrangente e eficiente para a gestão de documentos, destacando-se por sua simplicidade, agilidade e capacidade de integração com outros serviços e sistemas.
 
 # Serviços
+![DigitalSE Componentes e comunicação](./digitalsebase.jpg)
 
 **digitalseapi**:Principal ponto de entrada no sistema, com os endpoints que realizam a comunicação com os outros serviços.
 
