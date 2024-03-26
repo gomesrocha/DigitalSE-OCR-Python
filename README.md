@@ -42,20 +42,29 @@ You can [fork](https://github.com/gomesrocha/DigitalSE-OCR-Python/fork) the proj
 
 1. Clone the project
 
-
-
 git clone https://github.com/gomesrocha/DigitalSE-OCR-Python.git
 
+2. Create an .env file with the data for the environment variables in digitalseapi and ocrservice
 
-2. To run it, go into the DIgitalSE-OCR-Python project directory and run docker-compose
+environment=dev
+RABBITMQ_URL=amqp://login:password@server:port/
+MINIO_URL=server:port
+MINIO_ACCESS_KEY=Access key minio
+MINIO_SECRET_KEY=Secret key minio
+SECRET_KEY=secret key for auth
+DATABASE_URL=postgresql://user:password@server/digitalsedb
+MONGODB_URL=mongodb://server:port/
+
+
+3. To run it, go into the DIgitalSE-OCR-Python project directory and run docker-compose
 
 
 docker compose up -d --build
 
 
-3. Check that all the services have been correctly uploaded to the docker
+4. Check that all the services have been correctly uploaded to the docker
 
-4. Open the project via localhost:8000
+5. Open the project via localhost:8000
 
 Versão: pt-BR
 
@@ -101,14 +110,24 @@ Você pode fazer um [fork](https://github.com/gomesrocha/DigitalSE-OCR-Python/fo
 
 git clone https://github.com/gomesrocha/DigitalSE-OCR-Python.git
 
+2. Crie um arquivo .env com os dados das variáveis de ambiente, em digitalseapi e em ocrservice
 
-2. Para rodar, entre no diretório do projeto DIgitalSE-OCR-Python e execute o docker-compose
+environment=dev
+RABBITMQ_URL=amqp://login:password@server:port/
+MINIO_URL=server:port
+MINIO_ACCESS_KEY=Access key minio
+MINIO_SECRET_KEY=Secret key minio
+SECRET_KEY=secret key para auth
+DATABASE_URL=postgresql://user:password@server/digitalsedb
+MONGODB_URL=mongodb://server:port/
+
+3. Para rodar, entre no diretório do projeto DIgitalSE-OCR-Python e execute o docker-compose
 
 
 docker compose up -d --build
 
 
-3. Verifique se todos os serviços subiram corretamente no docker
+4. Verifique se todos os serviços subiram corretamente no docker
 
-4. Abra o projeto via localhost:8000
+5. Abra o projeto via localhost:8000
 
