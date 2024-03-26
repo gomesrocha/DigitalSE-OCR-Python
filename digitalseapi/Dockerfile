@@ -4,6 +4,7 @@ FROM python:3.10-slim
 RUN mkdir -p /home/app
 RUN mkdir -p /home/app/images
 VOLUME /home/app/images
+COPY ./app/.env .
 
 # Create the home directory
 ENV APP_HOME=/home/app/api

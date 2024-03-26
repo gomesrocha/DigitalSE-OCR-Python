@@ -17,13 +17,13 @@ class UploadedFile(BaseModel):
 
 
 #Model database
-class GestaoArquivos(SQLModel, table=True):
+class FileManager(SQLModel, table=True):
     __tablename__ = "gestaoarquivos"
     
     id: Optional[int] = Field(primary_key=True)
-    titulo: Optional[str] = Field(max_length=255)
-    descricao: Optional[str] = Field(max_length=255)
-    responsavel: Optional[str] = Field(max_length=255)
-    data: Optional[datetime] = Field(default=datetime.now())
-    localizacao: Optional[str] = Field(max_length=255)
+    title: Optional[str] = Field(max_length=255)
+    description: Optional[str] = Field(max_length=255)
+    owner: Optional[str] = Field(max_length=255)
+    date: Optional[datetime] = Field(default=datetime.now())
+    location: Optional[str] = Field(max_length=255)
 

@@ -1,5 +1,5 @@
 from sqlmodel import SQLModel
 from .user import User
-from .file_manager import GestaoArquivos
+from .file_manager import FileManager
 
-__all__ = ["User", "GestaoArquivos", "SQLModel"]
+__all__ = ["User", "FileManager", "SQLModel"]

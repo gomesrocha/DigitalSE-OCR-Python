@@ -1,7 +1,9 @@
+from motor.motor_asyncio import AsyncIOMotorClient
 from sqlmodel import create_engine, SQLModel, Session
 from fastapi import Depends
+from app.infra.config import settings
 
-DATABASE_URL = "postgresql://postgres:postgres@postgres/digitalsedb"
+DATABASE_URL = settings.DATABASE_URL
 
 engine = create_engine(DATABASE_URL, echo=True)
 
@@ -16,3 +18,7 @@ def get_session():
 
 
 ActiveSession = Depends(get_session)
+
+
+async def get_mongodb_client() -> AsyncIOMotorClient:
+    return AsyncIOMotorClient(settings.MONGODB_URL)

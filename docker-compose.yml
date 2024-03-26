@@ -35,8 +35,8 @@ services:
       - "8000:8000"
     volumes:
       - $HOME/data:/home/app/images
-    environment:
-      - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672/
+    env_file:
+      - ./digitalseapi/.env
     depends_on:
       - minio
       - postgres

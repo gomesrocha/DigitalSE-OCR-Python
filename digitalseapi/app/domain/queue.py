@@ -1,8 +1,8 @@
 import aio_pika
-
+from app.infra.config import settings
 
 async def send_data_queue(message_body):
-    connection = await aio_pika.connect_robust("amqp://guest:guest@rabbitmq:5672/")
+    connection = await aio_pika.connect_robust(settings.RABBITMQ_URL)
     async with connection:
         channel = await connection.channel()
 

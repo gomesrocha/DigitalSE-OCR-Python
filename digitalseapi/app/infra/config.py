@@ -8,14 +8,13 @@ log = logging.getLogger("uvicorn")
 
 class Settings(BaseSettings):
     environment: str = "dev"
-    testing: bool = False
     RABBITMQ_URL: str = ""
-    DB_URL: str = ""
-    MINIO_URL: str = "minio:9000"
-    MINIO_ACCESS_KEY: str = "digitalse"
-    MINIO_SECRET_KEY: str = "digitalse"
-    MINIO_SECURE: bool = False
-    SECRET_KEY: str = "digitalse"
+    MINIO_URL: str = ""
+    MINIO_ACCESS_KEY: str = ""
+    MINIO_SECRET_KEY: str = ""
+    DATABASE_URL: str = ""
+    MONGODB_URL: str = ""
+    SECRET_KEY: str = ""
     #ALGORITHM: str = "HS256"
     #ACCESS_TOKEN_EXPIRE_MINUTES: str = 30
     #REFRESH_TOKEN_EXPIRE_MINUTES: str = 600
@@ -35,8 +34,7 @@ settings = get_settings()
 
 # Configurações do Minio
 def get_minio_client() -> Minio:
-
     return Minio(settings.MINIO_URL,
-                      access_key=settings.MINIO_ACCESS_KEY,
-                      secret_key=settings.MINIO_SECRET_KEY,
-                      secure=settings.MINIO_SECURE)
+                 access_key=settings.MINIO_ACCESS_KEY,
+                 secret_key=settings.MINIO_SECRET_KEY,
+                 secure=False)
