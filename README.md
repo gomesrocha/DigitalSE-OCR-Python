@@ -113,8 +113,6 @@ Você pode fazer um [fork](https://github.com/gomesrocha/DigitalSE-OCR-Python/fo
 
 1. Clone o projeto
 
-
-
 git clone https://github.com/gomesrocha/DigitalSE-OCR-Python.git
 
 2. Crie um arquivo .env com os dados das variáveis de ambiente, em digitalseapi e em ocrservice
@@ -135,8 +133,7 @@ DATABASE_URL=postgresql://user:password@server/digitalsedb
 
 MONGODB_URL=mongodb://server:port/
 
-3. Para rodar, entre no diretório do projeto DIgitalSE-OCR-Python e execute o docker-compose
-
+3. Para rodar, entre no diretório do projeto DigitalSE-OCR-Python e execute o docker-compose
 
 docker compose up -d --build
 
