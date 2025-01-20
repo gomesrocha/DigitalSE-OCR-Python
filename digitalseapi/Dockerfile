@@ -1,4 +1,4 @@
-FROM python:3.10-slim
+FROM python:3.14.0a1-slim
 
 # Create directory for the app user
 RUN mkdir -p /home/app
