@@ -20,7 +20,7 @@ python-multipart
 #opentelemetry-distro
 #opentelemetry-instrumentation-requests
 aio-pika==9.3.1
-setuptools==69.1.1
+setuptools==70.0.0
 #elastic-apm[fastapi]
 jose
 passlib
